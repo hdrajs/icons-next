@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef } from "react";
 import styles from "./styles.module.css";
 import clsx from "clsx";
 
@@ -10,14 +10,14 @@ export type Props = React.HTMLAttributes<HTMLOrSVGElement> & {
   viewBox?: string;
 };
 
-export const SvgIcon = React.forwardRef(function (props: Props, ref) {
+export const SvgIcon = forwardRef(function (props: Props, ref) {
   const {
     children,
     className,
     color,
     size = "md",
     inheritViewBox = false,
-    viewBox = `0 0 48 48`,
+    viewBox = `0 0 24 24`,
     ...other
   } = props;
 
