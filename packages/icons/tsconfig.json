@@ -20,16 +20,23 @@
       "dom",
       "ES2015"
     ],
+    "outDir": "./dist",
     "module": "ESNext",
     "target": "es6",
     "plugins": [
       {
         "name": "typescript-plugin-css-modules"
       }
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src"
+      ]
+    }
   },
   "include": [
-    "."
+    ".",
   ],
   "exclude": [
     "dist",

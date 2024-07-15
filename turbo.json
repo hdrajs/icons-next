@@ -12,6 +12,11 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "build:icons": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**"]
     }
   }
 }

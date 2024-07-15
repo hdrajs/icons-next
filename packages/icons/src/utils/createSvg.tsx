@@ -1,4 +1,4 @@
-import * as React from "react";
+import { memo, forwardRef } from "react";
 import { Props, SvgIcon } from "./SvgIcon";
 
 export const createSvg = (path: React.ReactNode) => {
@@ -10,5 +10,5 @@ export const createSvg = (path: React.ReactNode) => {
     );
   };
 
-  return React.memo(React.forwardRef(Component));
+  return memo(forwardRef(Component));
 };

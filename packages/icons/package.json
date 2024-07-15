@@ -5,6 +5,8 @@
     "lint": "eslint --cache .",
     "lint:fix": "eslint --cache . --fix",
     "typecheck": "tsc --noEmit",
+    "build:icons": "ts-node -r tsconfig-paths/register --transpile-only src/scripts/generate.ts",
+    "format": "prettier --write \"src/**/*{.ts,.tsx}\"",
     "clean": "run-s clean:build clean:cache",
     "clean:build": "rm -rf dist",
     "clean:cache": "rm -rf node_modules .turbo .eslintcache stats.html"
@@ -29,9 +31,11 @@
     "@types/node": "^20.9.2",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
+    "prettier": "^3.3.3",
     "rollup": "^3.29.1",
     "rollup-plugin-visualizer": "^5.9.2",
-    "svgo": "^3.0.2"
+    "svgo": "^3.0.2",
+    "ts-node": "^10.9.2"
   },
   "publishConfig": {
     "access": "public"
@@ -39,6 +43,7 @@
   "dependencies": {
     "@repo/typescript-config": "workspace:*",
     "clsx": "^2.1.1",
-    "typescript-plugin-css-modules": "^5.1.0"
+    "typescript-plugin-css-modules": "^5.1.0",
+    "xmldom": "^0.6.0"
   }
 }
