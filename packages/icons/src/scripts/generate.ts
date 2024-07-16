@@ -22,9 +22,7 @@ function* walkSync(dir) {
 const extractChildrenFromSVG = (svgString: string) => {
   const parser = new DOMParser();
   const svgDocument = parser.parseFromString(svgString, "image/svg+xml");
-
   const svgElement = svgDocument.documentElement;
-
   return svgChildrenToString(svgElement.childNodes);
 };
 
@@ -53,35 +51,31 @@ function makeIndex(dir) {
 }
 
 const createIndex = (dir, child) => {
-  if (fs.existsSync(dir + "/index.ts")) {
-    const current = fs.readFileSync(dir + "/index.ts", "utf-8");
-    fs.writeFileSync(
-      dir + "/index.ts",
-      current + `export * from "./${child}";\n`,
-    );
-  } else {
-    fs.writeFileSync(dir + "/index.ts", `export * from "./${child}";\n`);
+  const newPath = dir + "/index.ts";
+  const current = fs.existsSync(newPath)
+    ? fs.readFileSync(newPath, "utf-8")
+    : "";
+  fs.writeFileSync(newPath, current + `export * from "./${child}";\n`);
+};
+
+const generateSvgFile = (filePath) => {
+  const svg = fs.readFileSync(filePath, "utf-8");
+  const { more, second, last } = split(filePath);
+  const sName = capitalize(last.split("=")[1].split(".")[0]);
+  const content = `import { createSvg } from "src/utils/createSvg";
+
+export const ${more.join("") + sName} = createSvg(<>${extractChildrenFromSVG(svg)}</>);`;
+
+  const dirOutput = "src/icons/" + second + "/" + more.join("/");
+  if (!fs.existsSync(dirOutput)) {
+    fs.mkdirSync(dirOutput, { recursive: true });
   }
+  fs.writeFileSync(dirOutput + "/" + sName + ".tsx", content);
 };
 
 const main = () => {
   for (const filePath of walkSync("svg")) {
-    const svg = fs.readFileSync(filePath, "utf-8");
-
-    const { more, second, last } = split(filePath);
-    const sName = capitalize(last.split("=")[1].split(".")[0]);
-    const content = `import { createSvg } from "src/utils/createSvg";
-
-export const ${more.join("") + sName} = createSvg(<>${extractChildrenFromSVG(svg)}</>);`;
-    try {
-      const dirOutput = "src/icons/" + second + "/" + more.join("/");
-      if (!fs.existsSync(dirOutput)) {
-        fs.mkdirSync(dirOutput, { recursive: true });
-      }
-      fs.writeFileSync(dirOutput + "/" + sName + ".tsx", content);
-    } catch (err) {
-      console.error(err);
-    }
+    generateSvgFile(filePath);
   }
   makeIndex("src/icons");
 };
