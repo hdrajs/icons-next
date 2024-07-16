@@ -1,8 +1,23 @@
 /* eslint-disable no-redeclare */
 /* eslint-disable no-undef */
 //@ts-nocheck
-const fs = require("fs");
-var { DOMParser, XMLSerializer } = require("xmldom");
+import fs from "fs";
+import { DOMParser, XMLSerializer } from "xmldom";
+import path from "path";
+
+function* walkSync(dir) {
+  const files = fs.readdirSync(dir, { withFileTypes: true });
+  for (const file of files) {
+    if (file.isDirectory()) {
+      yield* walkSync(path.join(dir, file.name));
+    } else {
+      const filePath = path.join(dir, file.name);
+      if (path.extname(filePath) === ".svg") {
+        yield filePath;
+      }
+    }
+  }
+}
 
 const extractChildrenFromSVG = (svgString: string) => {
   const parser = new DOMParser();
@@ -25,124 +40,58 @@ const svgChildrenToString = (svgElement: NodeListOf<ChildNode>) => {
 const capitalize = (str: string): string =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
+function makeIndex(dir) {
+  const files = fs.readdirSync(dir, { withFileTypes: true });
+  for (const file of files) {
+    if (fs.lstatSync(dir + "/" + file.name).isDirectory()) {
+      createIndex(dir, file.name);
+      makeIndex(path.join(dir, file.name));
+    } else {
+      createIndex(dir, file.name.split(".")[0]);
+    }
+  }
+}
+
+const createIndex = (dir, child) => {
+  if (fs.existsSync(dir + "/index.ts")) {
+    const current = fs.readFileSync(dir + "/index.ts", "utf-8");
+    fs.writeFileSync(
+      dir + "/index.ts",
+      current + `export * from "./${child}";\n`,
+    );
+  } else {
+    fs.writeFileSync(dir + "/index.ts", `export * from "./${child}";\n`);
+  }
+};
+
 const main = () => {
-  const types = fs.readdirSync("svg");
-  let exportAll = ``;
-  types.forEach((type: string) => {
-    const iconNames = fs.readdirSync("svg/" + type);
-    let exportIcon = "";
-    iconNames.forEach((iconName: string) => {
-      const files = fs.readdirSync("svg/" + type + "/" + iconName);
-      const svgs = files.filter((file: string) => file.endsWith(".svg"));
-      let ex = ``;
-      svgs.forEach((style: string) => {
-        const svg = fs.readFileSync(
-          "svg/" + type + "/" + iconName + "/" + style,
-          "utf-8",
-        );
-        const sName = capitalize(style.split("=")[1].split(".")[0]);
+  for (const filePath of walkSync("svg")) {
+    const svg = fs.readFileSync(filePath, "utf-8");
 
-        const content = `import { createSvg } from "src/utils/createSvg";
+    const { more, second, last } = split(filePath);
+    const sName = capitalize(last.split("=")[1].split(".")[0]);
+    const content = `import { createSvg } from "src/utils/createSvg";
 
-export const ${iconName + sName} = createSvg(<>${extractChildrenFromSVG(svg)}</>);`;
-        try {
-          const dir = "src/icons/" + type + "/" + iconName;
-          if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir);
-          }
-          fs.writeFileSync(dir + "/" + sName + ".tsx", content);
-          ex += `export * from "./${sName}";\n`;
-        } catch (err) {
-          console.error(err);
-        }
-      });
-      try {
-        const dir = "src/icons/" + type + "/" + iconName;
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir);
-        }
-        fs.writeFileSync(dir + "/index.ts", ex);
-      } catch (err) {
-        console.error(err);
-      }
-      const folders = files.filter(
-        (file: string) => !file.endsWith(".svg") && !file.endsWith(".zip"),
-      );
-      let outer = ``;
-      folders.forEach((name: string) => {
-        const folder = fs
-          .readdirSync("svg/" + type + "/" + iconName + "/" + name)
-          .filter((file: string) => !file.endsWith(".zip"));
-        let styleName = "";
-        folder.forEach((style: string) => {
-          const svg = fs.readFileSync(
-            "svg/" + type + "/" + iconName + "/" + name + "/" + style,
-            "utf-8",
-          );
-
-          const sName = capitalize(style.split("=")[1].split(".")[0]);
-
-          const content = `import { createSvg } from "src/utils/createSvg";
-  
-  export const ${iconName + name + sName} = createSvg(<>${extractChildrenFromSVG(svg)}</>);`;
-          try {
-            const dir = "src/icons/" + type + "/" + iconName + "/" + name;
-            if (!fs.existsSync(dir)) {
-              fs.mkdirSync(dir);
-            }
-            fs.writeFileSync(dir + "/" + sName + ".tsx", content);
-            styleName += `export * from "./${sName}";\n`;
-          } catch (err) {
-            console.error(err);
-          }
-        });
-        try {
-          const dir = "src/icons/" + type + "/" + iconName + "/" + name;
-          if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir);
-          }
-          fs.writeFileSync(dir + "/index.ts", styleName);
-          outer += `export * from "./${name}";\n`;
-        } catch (err) {
-          console.error(err);
-        }
-      });
-      if (folders.length > 0) {
-        try {
-          const dir = "src/icons/" + type + "/" + iconName;
-          if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir);
-          }
-          fs.writeFileSync(dir + "/index.ts", outer);
-          exportIcon += `export * from "./${iconName}";\n`;
-        } catch (err) {
-          console.error(err);
-        }
-      }
-    });
+export const ${more.join("") + sName} = createSvg(<>${extractChildrenFromSVG(svg)}</>);`;
     try {
-      const dir = "src/icons/" + type;
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
+      const dirOutput = "src/icons/" + second + "/" + more.join("/");
+      if (!fs.existsSync(dirOutput)) {
+        fs.mkdirSync(dirOutput, { recursive: true });
       }
-      fs.writeFileSync(dir + "/index.ts", exportIcon);
-      if (
-        fs.readdirSync("svg/" + type).filter((s: string) => !s.endsWith("svg"))
-          .length > 0
-      )
-        exportAll += `export * from "./${type}";\n`;
+      fs.writeFileSync(dirOutput + "/" + sName + ".tsx", content);
     } catch (err) {
       console.error(err);
     }
-  });
-  try {
-    const dir = "src/icons";
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
-    fs.writeFileSync(dir + "/index.ts", exportAll);
-  } catch (err) {
-    console.error(err);
   }
+  makeIndex("src/icons");
 };
+
+const split = (filePath: string) => {
+  const more = (filePath as string).split("\\");
+  const first = more.shift();
+  const second = more.shift();
+  const last = more.pop();
+  return { first, second, more, last };
+};
+
 main();

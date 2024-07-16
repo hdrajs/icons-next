@@ -1,12 +1,15 @@
 {
   "name": "next-icons",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "lint": "eslint --cache .",
     "lint:fix": "eslint --cache . --fix",
     "typecheck": "tsc --noEmit",
-    "build:icons": "ts-node -r tsconfig-paths/register --transpile-only src/scripts/generate.ts",
+    "clean:icons":"del /Q .\\src\\icons",
+    "build:icons": "tsx src/scripts/generate.ts",
     "format": "prettier --write \"src/**/*{.ts,.tsx}\"",
+    "build":"pnpm clean:icons && pnpm build:icons && pnpm format",
     "clean": "run-s clean:build clean:cache",
     "clean:build": "rm -rf dist",
     "clean:cache": "rm -rf node_modules .turbo .eslintcache stats.html"
@@ -35,7 +38,8 @@
     "rollup": "^3.29.1",
     "rollup-plugin-visualizer": "^5.9.2",
     "svgo": "^3.0.2",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "tsx": "^4.16.2"
   },
   "publishConfig": {
     "access": "public"

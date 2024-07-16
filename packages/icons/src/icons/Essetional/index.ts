@@ -23,6 +23,7 @@ export * from "./Reserve";
 export * from "./Send";
 export * from "./Share";
 export * from "./Slash";
+export * from "./Sort";
 export * from "./Sticker";
 export * from "./Tag";
 export * from "./Tick";
