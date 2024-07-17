@@ -30,7 +30,10 @@ const svgChildrenToString = (svgElement: NodeListOf<ChildNode>) => {
   const serializer = new XMLSerializer();
   let pathChild = "";
   Array.from(svgElement).forEach((child: ChildNode) => {
-    pathChild += serializer.serializeToString(child);
+    const node: string = serializer
+      .serializeToString(child)
+      .replace("#171717", "currentColor");
+    pathChild += node;
   });
   return pathChild;
 };
@@ -73,7 +76,20 @@ export const ${more.join("") + sName} = createSvg(<>${extractChildrenFromSVG(svg
   fs.writeFileSync(dirOutput + "/" + sName + ".tsx", content);
 };
 
+const clean = (dir) => {
+  const files = fs.readdirSync(dir, { withFileTypes: true });
+  for (const file of files) {
+    if (fs.lstatSync(dir + "/" + file.name).isDirectory()) {
+      makeIndex(path.join(dir, file.name));
+    } else {
+      fs.unlinkSync(dir + "/" + file.name);
+    }
+  }
+  fs.rmdirSync(dir, { recursive: true });
+};
+
 const main = () => {
+  clean("src/icons");
   for (const filePath of walkSync("svg")) {
     generateSvgFile(filePath);
   }

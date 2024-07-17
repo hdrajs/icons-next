@@ -1,18 +1,41 @@
 {
-  "name": "next-icons",
+  "name": "icons-next",
   "version": "0.0.0",
   "type": "module",
+  "description": "icons library for react components",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hoanledev/icons-next.git"
+  },
+  "keywords": [
+    "next-icons",
+    "icons-next",
+    "next",
+    "nextjs",
+    "icons park",
+    "icons",
+    "react icons",
+    "icons for react components",
+    "icons library",
+    "react",
+    "typescript"
+  ],
+  "author": "hoanledev",
+  "license": "ISC",
   "scripts": {
     "lint": "eslint --cache .",
     "lint:fix": "eslint --cache . --fix",
     "typecheck": "tsc --noEmit",
-    "clean:icons":"del /Q .\\src\\icons",
     "build:icons": "tsx src/scripts/generate.ts",
     "format": "prettier --write \"src/**/*{.ts,.tsx}\"",
-    "build":"pnpm clean:icons && pnpm build:icons && pnpm format",
+    "build":"pnpm build:icons && pnpm format",
+    "pre:release":"tsc -p tsconfig.build.json",
     "clean": "run-s clean:build clean:cache",
     "clean:build": "rm -rf dist",
-    "clean:cache": "rm -rf node_modules .turbo .eslintcache stats.html"
+    "clean:cache": "rm -rf node_modules .turbo .eslintcache stats.html",
+    "release": "pnpm pre:release && pnpm publish"
   },
   "dist": {
     "react": "^18.2.0"
@@ -39,15 +62,15 @@
     "rollup-plugin-visualizer": "^5.9.2",
     "svgo": "^3.0.2",
     "ts-node": "^10.9.2",
+    "@repo/typescript-config": "workspace:*",
+    "xmldom": "^0.6.0",
     "tsx": "^4.16.2"
   },
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@repo/typescript-config": "workspace:*",
     "clsx": "^2.1.1",
     "typescript-plugin-css-modules": "^5.1.0",
-    "xmldom": "^0.6.0"
   }
 }

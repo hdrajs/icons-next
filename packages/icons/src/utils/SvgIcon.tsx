@@ -14,7 +14,7 @@ export const SvgIcon = forwardRef(function (props: Props, ref) {
   const {
     children,
     className,
-    color,
+    color = "#171717",
     size = "md",
     inheritViewBox = false,
     viewBox = `0 0 24 24`,
@@ -34,12 +34,13 @@ export const SvgIcon = forwardRef(function (props: Props, ref) {
         [styles[size]]: size,
         [className || ""]: className,
       })}
-      focusable="false"
-      color={color}
+      focusable={false}
       ref={ref}
+      style={{ color }}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
       {...more}
       {...other}
-      fill={color}
     >
       {children}
     </svg>
