@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import styles from "./styles.module.css";
+import "./styles.module.css";
 import clsx from "clsx";
 
 export type Props = React.HTMLAttributes<HTMLOrSVGElement> & {
@@ -30,8 +30,8 @@ export const SvgIcon = forwardRef(function (props: Props, ref) {
   return (
     <svg
       className={clsx({
-        [styles.root]: true,
-        [styles[size]]: size,
+        root: true,
+        [size]: size,
         [className || ""]: className,
       })}
       focusable={false}

@@ -1,4 +1,4 @@
-import { createSvg } from "src/utils/createSvg";
+import { createSvg } from "../../../../utils/createSvg";
 
 export const CdMainBold = createSvg(
   <>

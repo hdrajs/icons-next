@@ -65,7 +65,9 @@ const generateSvgFile = (filePath) => {
   const svg = fs.readFileSync(filePath, "utf-8");
   const { more, second, last } = split(filePath);
   const sName = capitalize(last.split("=")[1].split(".")[0]);
-  const content = `import { createSvg } from "src/utils/createSvg";
+  console.log("last: " + more);
+
+  const content = `import { createSvg } from "../../${more.map((s) => "..").join("/")}/utils/createSvg";
 
 export const ${more.join("") + sName} = createSvg(<>${extractChildrenFromSVG(svg)}</>);`;
 
