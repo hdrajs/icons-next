@@ -30,8 +30,8 @@
     "typecheck": "tsc --noEmit",
     "build:icons": "tsx src/scripts/generate.ts",
     "format": "prettier --write \"src/**/*{.ts,.tsx}\"",
-    "build":"pnpm build:icons && pnpm format",
-    "pre:release":"tsc",
+    "build": "pnpm build:icons && pnpm format",
+    "pre:release": "tsc",
     "clean": "run-s clean:build clean:cache",
     "clean:build": "rm -rf dist",
     "clean:cache": "rm -rf node_modules .turbo .eslintcache stats.html",
@@ -67,7 +67,8 @@
     "tsx": "^4.16.2"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
   },
   "dependencies": {
     "clsx": "^2.1.1",
