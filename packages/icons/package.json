@@ -67,8 +67,7 @@
     "tsx": "^4.16.2"
   },
   "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "dependencies": {
     "clsx": "^2.1.1",
